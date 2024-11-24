@@ -1,12 +1,10 @@
-import { useRef, useState } from "react";
-import { useContext } from "react";
-import { Stack } from "react-bootstrap";
+import { useRef, useState, useEffect, useContext } from "react";
+import { Stack, Container } from "react-bootstrap";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 import { useFetchRecipientUser } from "../../hooks/useFetchRecipient";
 import moment from "moment";
 import InputEmoji from "react-input-emoji";
-import { useEffect } from "react";
 
 const ChatBox = () => {
   const { user } = useContext(AuthContext);
@@ -20,10 +18,23 @@ const ChatBox = () => {
     scroll.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const handleSendMessage = () => {
+    if (textMessage.trim()) {
+      sendTextMessage(textMessage, user, currentChat._id, setTextMessage);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // Evita di creare una nuova riga nell'input
+      handleSendMessage();
+    }
+  };
+
   if (!recipientUser)
     return (
       <p style={{ textAlign: "center", width: "100%" }}>
-        No conversation selected yet..
+        No conversation selected yet...
       </p>
     );
 
@@ -33,55 +44,71 @@ const ChatBox = () => {
     );
 
   return (
-    <Stack gap={4} className="chat-box">
-      <div className="chat-header">
-        <strong>{recipientUser?.name}</strong>
-      </div>
-      <Stack gap={3} className="messages">
-        {messages &&
-          messages?.map((message, index) => (
-            <Stack
-              className={`${
-                message?.senderId === user?._id
-                  ? "message self align-self-end flex-grow-0"
-                  : "message align-self-start flex-grow-0"
-              }`}
-              key={index}
-              ref={scroll}
-            >
-              <span>{message.text}</span>
-              <span className="message-footer">
-                {moment(message.createdAt).calendar()}
-              </span>
-            </Stack>
-          ))}
-      </Stack>
-      <Stack direction="horizontal" className="chat-input flex-grow-0" gap={3}>
-        <InputEmoji
-          value={textMessage}
-          onChange={setTextMessage}
-          fontFamily="nunito"
-          borderColor="rgba(72, 112, 223, 0.2)"
-        />
-        <button
-          className="send-btn"
-          onClick={() =>
-            sendTextMessage(textMessage, user, currentChat._id, setTextMessage)
-          }
+    <Container fluid="md" className="chat-box-container p-4">
+      <Stack gap={3} className="chat-box border rounded shadow bg-light">
+        {/* Header */}
+        <div className="chat-header bg-primary text-white p-3 rounded-top">
+          <strong>{recipientUser?.name}</strong>
+        </div>
+
+        {/* Messaggi */}
+        <Stack
+          gap={2}
+          className="messages overflow-auto px-4 py-3"
+          style={{ maxHeight: "60vh" }}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-send-fill"
-            viewBox="0 0 16 16"
+          {messages &&
+            messages.map((message, index) => (
+              <Stack
+                key={index}
+                ref={scroll}
+                className={`message ${
+                  message?.senderId === user?._id
+                    ? "align-self-end bg-primary text-white"
+                    : "align-self-start bg-secondary text-white"
+                } p-3 rounded`}
+              >
+                <span>{message.text}</span>
+                <span className="message-footer text-white-50 small">
+                  {moment(message.createdAt).calendar()}
+                </span>
+              </Stack>
+            ))}
+        </Stack>
+
+        {/* Input */}
+        <Stack
+          direction="horizontal"
+          className="chat-input align-items-center p-3 border-top bg-light rounded-bottom"
+          gap={2}
+        >
+          <InputEmoji
+            value={textMessage}
+            onChange={setTextMessage}
+            fontFamily="nunito"
+            borderColor="rgba(0, 0, 0, 0.2)"
+            placeholder="Type a message..."
+            className="flex-grow-1 border rounded px-2"
+            onKeyDown={handleKeyDown} // Aggiunto evento per il tasto "Enter"
+          />
+          <button
+            className="send-btn btn btn-primary d-flex align-items-center justify-content-center"
+            onClick={handleSendMessage} // Centralizzata la logica di invio
           >
-            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z" />
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="currentColor"
+              className="bi bi-send-fill"
+              viewBox="0 0 16 16"
+            >
+              <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z" />
+            </svg>
+          </button>
+        </Stack>
       </Stack>
-    </Stack>
+    </Container>
   );
 };
 
