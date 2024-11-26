@@ -9,7 +9,6 @@ const Login = () => {
   return (
     <>
       <Form onSubmit={loginUser}>
-        {console.log("Ciao")}
         <Row
           style={{
             height: "100vh",
