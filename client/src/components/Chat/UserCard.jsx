@@ -93,46 +93,50 @@ const UserCard = ({ chat, user }) => {
         </div>
       </div>
 
-      {/* Stato e Notifiche */}
-      <div className="d-flex flex-column align-items-end">
-        <div
-          className="date text-muted"
-          style={{
-            fontSize: "0.8rem",
-          }}
-        >
-          {moment(latestMessage?.createdAt).calendar()}
-        </div>
-        <div
-          className={`this-user-notifications text-white fw-bold ${
-            thisUserNotifications?.length > 0
-              ? "bg-danger rounded-pill px-2 py-1 mt-1"
-              : ""
-          }`}
-          style={{
-            fontSize: "0.8rem",
-            minWidth: "20px",
-            textAlign: "center",
-          }}
-        >
-          {thisUserNotifications?.length > 0
-            ? thisUserNotifications?.length
-            : ""}
-        </div>
-        <span
-          className={`user-online position-absolute ${
-            isOnline ? "bg-success" : "bg-secondary"
-          }`}
-          style={{
-            bottom: "10px",
-            right: "10px",
-            width: "10px",
-            height: "10px",
-            borderRadius: "50%",
-            border: "2px solid #fff",
-          }}
-        ></span>
-      </div>
+{/* Stato e Notifiche */}
+<div className="d-flex flex-column align-items-end">
+  <div
+    className="date text-muted"
+    style={{
+      fontSize: "0.8rem",
+    }}
+  >
+    {moment(latestMessage?.createdAt).calendar()}
+  </div>
+
+  {/* Contatore notifiche */}
+  {thisUserNotifications?.length > 0 && (
+    <div
+      className={`this-user-notifications text-white fw-bold bg-success rounded-pill px-2 py-1 mt-1`}
+      style={{
+        fontSize: "0.8rem",
+        minWidth: "20px",
+        textAlign: "center",
+      }}
+    >
+      {thisUserNotifications?.length}
+    </div>
+  )}
+
+  {/* Cerchio verde solo quando l'utente è online e ci sono notifiche */}
+  {thisUserNotifications?.length > 0 && (
+    <span
+      className={`user-online position-absolute ${
+        isOnline ? "bg-success" : "bg-secondary"
+      }`}
+      style={{
+        bottom: "10px",
+        right: "10px",
+        width: "10px",
+        height: "10px",
+        borderRadius: "50%",
+        border: "2px solid #fff",
+      }}
+    ></span>
+  )}
+</div>
+
+
     </Stack>
   );
 };
