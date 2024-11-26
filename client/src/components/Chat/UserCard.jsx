@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Stack } from "react-bootstrap";
-import avarter from "../../assets/avarter.svg";
+import avatar from "../../assets/avatar.svg";
 import { ChatContext } from "../../context/ChatContext";
 import { useFecthLatestMessage } from "../../hooks/useFetchLatestMessage";
 import { useFetchRecipientUser } from "../../hooks/useFetchRecipient";
@@ -25,60 +25,115 @@ const UserCard = ({ chat, user }) => {
 
   const truncateText = (text) => {
     let shortText = text.substring(0, 20);
-
     if (text.length > 20) {
       shortText = shortText + "...";
     }
-
     return shortText;
   };
 
   return (
-    <>
-      <Stack
-        direction="horizontal"
-        gap={3}
-        className="user-card align-items-center p-2 justify-content-between"
-        role="button"
-        onClick={() => {
-          if (thisUserNotifications?.length !== 0) {
-            markThisUserNotificationsAsRead(
-              thisUserNotifications,
-              notifications
-            );
-          }
-        }}
-      >
-        <div className="d-flex">
-          <div className="me-2">
-            <img src={avarter} alt="person-circle" height="35px" />
-          </div>
-          <div className="text-content">
-            <div className="name">{recipientUser?.name}</div>
-            <div className="text">
-              {latestMessage?.text && (
-                <span>{truncateText(latestMessage?.text)}</span>
-              )}
-            </div>
-          </div>
+    <Stack
+      direction="horizontal"
+      gap={3}
+      className="user-card align-items-center p-3 rounded shadow-sm position-relative"
+      role="button"
+      onClick={() => {
+        if (thisUserNotifications?.length !== 0) {
+          markThisUserNotificationsAsRead(
+            thisUserNotifications,
+            notifications
+          );
+        }
+      }}
+      style={{
+        backgroundColor: "#fff",
+        border: "1px solid #e5e7eb",
+        transition: "background-color 0.3s ease, transform 0.2s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = "#f9fafb";
+        e.currentTarget.style.transform = "scale(1.02)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = "#fff";
+        e.currentTarget.style.transform = "scale(1)";
+      }}
+    >
+      {/* Avatar e Informazioni */}
+      <div className="d-flex align-items-center">
+        <div className="me-3">
+          <img
+            src={avatar}
+            alt="person-circle"
+            height="45px"
+            style={{
+              borderRadius: "50%",
+              border: "2px solid #e5e7eb",
+            }}
+          />
         </div>
-        <div className="d-flex flex-column align-items-end">
-          <div className="date">
-            {moment(latestMessage?.createdAt).calendar()}
+        <div className="text-content">
+          <div
+            className="name fw-bold"
+            style={{
+              fontSize: "1rem",
+              color: "#374151",
+            }}
+          >
+            {recipientUser?.name}
           </div>
           <div
-            className={
-              thisUserNotifications?.length > 0 ? "this-user-notifications" : ""
-            }
+            className="text text-muted"
+            style={{
+              fontSize: "0.9rem",
+            }}
           >
-            {thisUserNotifications?.length > 0
-              ? thisUserNotifications?.length
-              : ""}
+            {latestMessage?.text && truncateText(latestMessage?.text)}
           </div>
-          <span className={isOnline ? "user-online" : ""}></span>
         </div>
-      </Stack>
-    </>
+      </div>
+
+      {/* Stato e Notifiche */}
+      <div className="d-flex flex-column align-items-end">
+        <div
+          className="date text-muted"
+          style={{
+            fontSize: "0.8rem",
+          }}
+        >
+          {moment(latestMessage?.createdAt).calendar()}
+        </div>
+        <div
+          className={`this-user-notifications text-white fw-bold ${
+            thisUserNotifications?.length > 0
+              ? "bg-danger rounded-pill px-2 py-1 mt-1"
+              : ""
+          }`}
+          style={{
+            fontSize: "0.8rem",
+            minWidth: "20px",
+            textAlign: "center",
+          }}
+        >
+          {thisUserNotifications?.length > 0
+            ? thisUserNotifications?.length
+            : ""}
+        </div>
+        <span
+          className={`user-online position-absolute ${
+            isOnline ? "bg-success" : "bg-secondary"
+          }`}
+          style={{
+            bottom: "10px",
+            right: "10px",
+            width: "10px",
+            height: "10px",
+            borderRadius: "50%",
+            border: "2px solid #fff",
+          }}
+        ></span>
+      </div>
+    </Stack>
   );
 };
 

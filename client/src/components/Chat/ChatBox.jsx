@@ -26,7 +26,7 @@ const ChatBox = () => {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // Evita di creare una nuova riga nell'input
+      e.preventDefault();
       handleSendMessage();
     }
   };
@@ -44,18 +44,34 @@ const ChatBox = () => {
     );
 
   return (
-    <Container fluid="md" className="chat-box-container p-4">
-      <Stack gap={3} className="chat-box border rounded shadow bg-light">
+    <Container
+      fluid
+      className="chat-box-container d-flex flex-column p-2 p-md-4"
+      style={{
+        height: "100vh",
+        maxWidth: "100%",
+      }}
+    >
+      <Stack gap={3} className="chat-box border rounded shadow bg-white flex-grow-1">
         {/* Header */}
-        <div className="chat-header bg-primary text-white p-3 rounded-top">
-          <strong>{recipientUser?.name}</strong>
+        <div
+          className="chat-header bg-primary text-white p-3 rounded-top d-flex justify-content-center align-items-center"
+          style={{
+            fontSize: "1.2rem",
+            fontWeight: "bold",
+          }}
+        >
+          {recipientUser?.name}
         </div>
 
         {/* Messaggi */}
         <Stack
-          gap={2}
-          className="messages overflow-auto px-4 py-3"
-          style={{ maxHeight: "60vh" }}
+          gap={3}
+          className="messages overflow-auto px-3 py-2 flex-grow-1"
+          style={{
+            maxHeight: "30vh",
+            padding: "0.5rem",
+          }}
         >
           {messages &&
             messages.map((message, index) => (
@@ -67,10 +83,18 @@ const ChatBox = () => {
                     ? "align-self-end bg-primary text-white"
                     : "align-self-start bg-secondary text-white"
                 } p-3 rounded`}
+                style={{
+                  maxWidth: "75%",
+                  wordBreak: "break-word",
+                  fontSize: "1rem",
+                }}
               >
                 <span>{message.text}</span>
-                <span className="message-footer text-white-50 small">
-                  {moment(message.createdAt).calendar()}
+                <span
+                  className="message-footer text-white-50 small d-block mt-1"
+                  style={{ fontSize: "0.8rem" }}
+                >
+                  {moment(message.createdAt).format("hh:mm A")}
                 </span>
               </Stack>
             ))}
@@ -79,7 +103,7 @@ const ChatBox = () => {
         {/* Input */}
         <Stack
           direction="horizontal"
-          className="chat-input align-items-center p-3 border-top bg-light rounded-bottom"
+          className="chat-input align-items-center p-2 border-top bg-light rounded-bottom"
           gap={2}
         >
           <InputEmoji
@@ -88,12 +112,17 @@ const ChatBox = () => {
             fontFamily="nunito"
             borderColor="rgba(0, 0, 0, 0.2)"
             placeholder="Type a message..."
-            className="flex-grow-1 border rounded px-2"
-            onKeyDown={handleKeyDown} // Aggiunto evento per il tasto "Enter"
+            className="flex-grow-1 border rounded px-3 py-2"
+            onKeyDown={handleKeyDown}
           />
           <button
             className="send-btn btn btn-primary d-flex align-items-center justify-content-center"
-            onClick={handleSendMessage} // Centralizzata la logica di invio
+            style={{
+              minWidth: "50px",
+              minHeight: "50px",
+              borderRadius: "50%",
+            }}
+            onClick={handleSendMessage}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

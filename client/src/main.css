@@ -2,7 +2,7 @@
 
 body {
   font-family: "Nunito", sans-serif;
-  background: rgb(40, 40, 40);
+  background: rgb(252, 252, 252);
 }
 
 /* All users */
@@ -59,7 +59,7 @@ body {
 .chat-box {
   max-height: calc(100vh - 10rem);
   overflow-y: auto;
-  background: rgb(25, 25, 25);
+  background: rgb(254, 254, 254);
   border-radius: 10px;
 }
 
@@ -206,5 +206,5 @@ body {
   font-weight: 700;
   border-radius: 50%;
   align-items: center;
-  justify-content: center;
+  justify-content: center;
 }
