@@ -93,6 +93,7 @@ const UserCard = ({ chat, user }) => {
                 border: "2px solid white",
                 boxShadow: "0 0 10px rgba(0, 255, 0, 0.7)",
               }}
+              title={isOnline ? "Online" : "Offline"} // Aggiunto il title
             ></span>
           )}
         </div>
@@ -109,7 +110,7 @@ const UserCard = ({ chat, user }) => {
           }}
         >
           <div
-            className="name d-flex align-items-center"
+            className="name"
             style={{
               fontWeight: "bold",
               fontSize: "1rem",
@@ -119,20 +120,6 @@ const UserCard = ({ chat, user }) => {
             }}
           >
             {recipientUser?.name || "Unknown User"}
-            <span
-              style={{
-                display: "inline-block",
-                width: "10px",
-                height: "10px",
-                marginLeft: "8px",
-                background: isOnline ? "limegreen" : "gray",
-                borderRadius: "50%",
-                boxShadow: isOnline
-                  ? "0 0 6px rgba(0, 255, 0, 0.7)"
-                  : "0 0 4px rgba(0, 0, 0, 0.2)",
-              }}
-              title={isOnline ? "Online" : "Offline"}
-            ></span>
           </div>
           <div
             className="text text-muted"

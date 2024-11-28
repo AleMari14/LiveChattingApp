@@ -53,8 +53,8 @@ const NavBar = () => {
                 fontSize: "1rem",
               }}
             >
-              Logged in as <b>{user.name}</b>
-            </div>
+            Logged in as : <b>{' '}{user.name}</b>
+</div>
           )}
 
           {/* Notifications Button always visible */}
