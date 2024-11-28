@@ -1,12 +1,12 @@
 import { useRef, useState, useEffect, useContext } from "react";
-import { Stack, Container } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 import { useFetchRecipientUser } from "../../hooks/useFetchRecipient";
 import moment from "moment";
 import InputEmoji from "react-input-emoji";
 
-const ChatBox = () => {
+const ChatBox = ({ closeChatBox }) => {
   const { user } = useContext(AuthContext);
   const { currentChat, messages, sendTextMessage, isMessagesLoading } =
     useContext(ChatContext);
@@ -26,7 +26,7 @@ const ChatBox = () => {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
+      e.preventDefault(); // Prevent new line on Enter
       handleSendMessage();
     }
   };
@@ -34,7 +34,7 @@ const ChatBox = () => {
   if (!recipientUser)
     return (
       <p style={{ textAlign: "center", width: "100%" }}>
-        No conversation selected yet...
+        Loading chat box...
       </p>
     );
 
@@ -46,97 +46,163 @@ const ChatBox = () => {
   return (
     <Container
       fluid
-      className="chat-box-container d-flex flex-column p-2 p-md-4"
+      className="d-flex justify-content-center align-items-center"
       style={{
-        height: "100vh",
-        maxWidth: "100%",
+        height: "80vh",
+        backgroundColor: "#f9fafb",
+        padding: "1rem",
       }}
     >
-      <Stack gap={3} className="chat-box border rounded shadow bg-white flex-grow-1">
+      <div
+        className="chat-box shadow-lg"
+        style={{
+          backgroundColor: "#ffffff",
+          borderRadius: "15px",
+          width: "100%",
+          maxWidth: "500px",
+          height: "100%",
+          maxHeight: "600px",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}
+      >
         {/* Header */}
         <div
-          className="chat-header bg-primary text-white p-3 rounded-top d-flex justify-content-center align-items-center"
+          className="chat-header d-flex align-items-center justify-content-between p-3"
           style={{
-            fontSize: "1.2rem",
-            fontWeight: "bold",
+            background: "linear-gradient(to right, #6c757d, #343a40)",
+            color: "white",
+            fontSize: "1rem",
+            borderTopLeftRadius: "15px",
+            borderTopRightRadius: "15px",
           }}
         >
-          {recipientUser?.name}
+          <strong>{recipientUser?.name}</strong>
+          <button
+            onClick={closeChatBox}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "white",
+              fontSize: "1.2rem",
+              cursor: "pointer",
+            }}
+          >
+            ×
+          </button>
         </div>
 
-        {/* Messaggi */}
-        <Stack
-          gap={3}
-          className="messages overflow-auto px-3 py-2 flex-grow-1"
+        {/* Messages */}
+        <div
+          className="messages flex-grow-1 p-3"
           style={{
-            maxHeight: "30vh",
-            padding: "0.5rem",
+            overflowY: "auto",
+            background: "#f8f9fa",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           {messages &&
             messages.map((message, index) => (
-              <Stack
+              <div
                 key={index}
                 ref={scroll}
                 className={`message ${
                   message?.senderId === user?._id
                     ? "align-self-end bg-primary text-white"
-                    : "align-self-start bg-secondary text-white"
-                } p-3 rounded`}
+                    : "align-self-start bg-light text-dark"
+                } p-2 mb-2 shadow-sm`}
                 style={{
                   maxWidth: "75%",
-                  wordBreak: "break-word",
-                  fontSize: "1rem",
+                  borderRadius: "10px",
+                  wordWrap: "break-word",
+                  fontSize: "0.9rem",
                 }}
               >
                 <span>{message.text}</span>
-                <span
-                  className="message-footer text-white-50 small d-block mt-1"
-                  style={{ fontSize: "0.8rem" }}
+                <div
+                  className="message-footer"
+                  style={{
+                    marginTop: "5px",
+                    textAlign: "right",
+                    fontSize: "0.8rem",
+                    color:
+                      message?.senderId === user?._id
+                        ? "rgba(255, 255, 255, 0.7)"
+                        : "rgba(0, 0, 0, 0.6)",
+                  }}
                 >
-                  {moment(message.createdAt).format("hh:mm A")}
-                </span>
-              </Stack>
+                  {moment(message.createdAt).format("HH:mm")}
+                </div>
+              </div>
             ))}
-        </Stack>
+        </div>
 
         {/* Input */}
-        <Stack
-          direction="horizontal"
-          className="chat-input align-items-center p-2 border-top bg-light rounded-bottom"
-          gap={2}
-        >
-          <InputEmoji
-            value={textMessage}
-            onChange={setTextMessage}
-            fontFamily="nunito"
-            borderColor="rgba(0, 0, 0, 0.2)"
-            placeholder="Type a message..."
-            className="flex-grow-1 border rounded px-3 py-2"
-            onKeyDown={handleKeyDown}
-          />
-          <button
-            className="send-btn btn btn-primary d-flex align-items-center justify-content-center"
-            style={{
-              minWidth: "50px",
-              minHeight: "50px",
-              borderRadius: "50%",
-            }}
-            onClick={handleSendMessage}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="currentColor"
-              className="bi bi-send-fill"
-              viewBox="0 0 16 16"
-            >
-              <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z" />
-            </svg>
-          </button>
-        </Stack>
-      </Stack>
+        <div
+  className="chat-input d-flex align-items-center p-2"
+  style={{
+    backgroundColor: "white",
+    borderTop: "1px solid rgba(0, 0, 0, 0.1)",
+    borderBottomLeftRadius: "15px",
+    borderBottomRightRadius: "15px",
+    display: "flex",
+    flexDirection: "column", // Disposizione verticale
+    gap: "10px", // Spaziatura tra input e pulsante
+  }}
+>
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "10px", // Spaziatura tra emoji e input
+      width: "100%", // Assicura che l'input occupi tutta la larghezza
+    }}
+  >
+    <InputEmoji
+      value={textMessage}
+      onChange={setTextMessage}
+      fontFamily="nunito"
+      borderColor="rgba(0, 0, 0, 0.2)"
+      placeholder="Type a message..."
+      onKeyDown={handleKeyDown}
+      style={{
+        flex: "1", // L'input occupa lo spazio disponibile
+        borderRadius: "10px",
+        border: "1px solid rgba(0, 0, 0, 0.2)",
+        padding: "10px",
+        overflowY: "auto",
+        maxHeight: "100px", // Limita l'altezza massima del campo di input
+      }}
+    />
+  </div>
+  <button
+    className="send-btn btn btn-primary d-flex align-items-center justify-content-center"
+    onClick={handleSendMessage}
+    style={{
+      alignSelf: "flex-end", // Allinea il pulsante a destra
+      width: "50px",
+      height: "50px",
+      borderRadius: "50%",
+      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+    }}
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      className="bi bi-send-fill"
+      viewBox="0 0 16 16"
+    >
+      <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z" />
+    </svg>
+  </button>
+</div>
+
+
+      </div>
     </Container>
   );
 };
