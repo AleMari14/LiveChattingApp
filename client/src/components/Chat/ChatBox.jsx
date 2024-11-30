@@ -1,47 +1,48 @@
-import { useRef, useState, useEffect, useContext } from "react";
-import { Container } from "react-bootstrap";
-import { AuthContext } from "../../context/AuthContext";
-import { ChatContext } from "../../context/ChatContext";
-import { useFetchRecipientUser } from "../../hooks/useFetchRecipient";
-import moment from "moment";
-import InputEmoji from "react-input-emoji";
+import { useRef, useState, useEffect, useContext } from "react"; // Importa gli hook di React
+import { Container } from "react-bootstrap"; // Importa un contenitore da React Bootstrap
+import { AuthContext } from "../../context/AuthContext"; // Importa il contesto di autenticazione
+import { ChatContext } from "../../context/ChatContext"; // Importa il contesto per la chat
+import { useFetchRecipientUser } from "../../hooks/useFetchRecipient"; // Hook per ottenere i dati dell'utente destinatario
+import moment from "moment"; // Libreria per la gestione di date e orari
+import InputEmoji from "react-input-emoji"; // Libreria per un input con supporto alle emoji
 
 const ChatBox = ({ closeChatBox }) => {
-  // Recupera l'utente autenticato dal contesto di autenticazione
+  // Recupera i dati dell'utente corrente dal contesto
   const { user } = useContext(AuthContext);
-  // Recupera la logica della chat e i messaggi dal contesto della chat
+
+  // Recupera dati relativi alla chat corrente dal contesto
   const { currentChat, messages, sendTextMessage, isMessagesLoading } = useContext(ChatContext);
-  // Utilizza un hook personalizzato per recuperare l'utente destinatario dalla chat corrente
+
+  // Ottiene i dati dell'utente destinatario
   const { recipientUser } = useFetchRecipientUser(currentChat, user);
-  // Stato per gestire il testo del messaggio in uscita
+
+  // Stato locale per il messaggio di testo
   const [textMessage, setTextMessage] = useState("");
-  // Riferimento per scorrere automaticamente la finestra dei messaggi
+
+  // Riferimento per gestire lo scorrimento automatico della chat
   const scroll = useRef();
 
-  // Effetto per fare lo scroll automatico verso l'ultimo messaggio quando vengono ricevuti nuovi messaggi
+  // Effetto per scorrere automaticamente la chat quando arrivano nuovi messaggi
   useEffect(() => {
     scroll.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]); // Questo effetto è eseguito ogni volta che i messaggi cambiano
+  }, [messages]);
 
-  // Funzione per inviare il messaggio
+  // Gestisce l'invio di un messaggio
   const handleSendMessage = () => {
-    // Controlla se il messaggio non è vuoto
     if (textMessage.trim()) {
-      // Invia il messaggio e resetta lo stato del messaggio
-      sendTextMessage(textMessage, user, currentChat._id, setTextMessage);
+      sendTextMessage(textMessage, user, currentChat._id, setTextMessage); // Invoca la funzione per inviare il messaggio
     }
   };
 
-  // Gestione dell'invio del messaggio con il tasto "Enter"
+  // Gestisce la pressione del tasto Enter per inviare un messaggio
   const handleKeyDown = (e) => {
-    // Se l'utente preme "Enter" senza "Shift", invia il messaggio
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // Evita che venga creata una nuova linea
+      e.preventDefault(); // Evita il comportamento predefinito (nuova riga)
       handleSendMessage();
     }
   };
 
-  // Se non ci sono dati sull'utente destinatario, mostra un messaggio di caricamento
+  // Se i dati dell'utente destinatario non sono ancora disponibili, mostra un messaggio di caricamento
   if (!recipientUser)
     return (
       <p style={{ textAlign: "center", width: "100%" }}>
@@ -49,101 +50,102 @@ const ChatBox = ({ closeChatBox }) => {
       </p>
     );
 
-  // Se i messaggi sono ancora in fase di caricamento, mostra un messaggio di caricamento
+  // Se i messaggi sono in fase di caricamento, mostra un messaggio di caricamento
   if (isMessagesLoading)
     return (
       <p style={{ textAlign: "center", width: "100%" }}>Loading chat...</p>
     );
 
-  // Ritorna il layout della chat
+  // Struttura della chat box
   return (
     <Container
       fluid
       className="d-flex justify-content-center align-items-center"
       style={{
-        height: "80vh", // Imposta l'altezza del contenitore della chat
-        backgroundColor: "#f9fafb", // Colore di sfondo chiaro per la chat
+        height: "80vh",
+        backgroundColor: "#f9fafb", // Colore di sfondo
         padding: "1rem", // Spaziatura interna
       }}
     >
+      {/* Contenitore principale della chat */}
       <div
         className="chat-box shadow-lg"
         style={{
-          backgroundColor: "#ffffff", // Colore di sfondo bianco per la chat box
-          borderRadius: "15px", // Angoli arrotondati per la chat box
-          width: "100%", // Larghezza al 100% del contenitore
-          maxWidth: "500px", // Larghezza massima di 500px
-          height: "100%", // Altezza al 100% del contenitore
-          maxHeight: "600px", // Altezza massima di 600px
-          display: "flex", // Layout flessibile per la chat box
-          flexDirection: "column", // Disposizione verticale degli elementi nella chat
-          overflow: "hidden", // Nasconde eventuali contenuti in eccesso
+          backgroundColor: "#ffffff", // Colore bianco per la chat box
+          borderRadius: "15px", // Angoli arrotondati
+          width: "100%", // Larghezza responsiva
+          maxWidth: "500px", // Larghezza massima
+          height: "100%", // Altezza responsiva
+          maxHeight: "600px", // Altezza massima
+          display: "flex",
+          flexDirection: "column", // Imposta la disposizione verticale
+          overflow: "hidden", // Nasconde il contenuto eccedente
         }}
       >
-        {/* Header della chat (visualizza il nome del destinatario) */}
+        {/* Intestazione della chat */}
         <div
           className="chat-header d-flex align-items-center justify-content-between p-3"
           style={{
-            background: "linear-gradient(to right, #6c757d, #343a40)", // Colore di sfondo con gradiente
-            color: "white", // Colore del testo bianco
-            fontSize: "1rem", // Imposta la dimensione del testo
-            borderTopLeftRadius: "15px", // Angolo arrotondato in alto a sinistra
-            borderTopRightRadius: "15px", // Angolo arrotondato in alto a destra
+            background: "linear-gradient(to right, #6c757d, #343a40)", // Gradiente di sfondo
+            color: "white", // Testo bianco
+            fontSize: "1rem",
+            borderTopLeftRadius: "15px", // Arrotonda gli angoli superiori
+            borderTopRightRadius: "15px",
           }}
         >
-          <strong>{recipientUser?.name}</strong> {/* Nome del destinatario */}
+          <strong>{recipientUser?.name}</strong> {/* Nome dell'utente destinatario */}
           <button
-            onClick={closeChatBox} // Funzione per chiudere la chat box
+            onClick={closeChatBox} // Funzione per chiudere la chat
             style={{
-              background: "transparent", // Nessuno sfondo
-              border: "none", // Nessun bordo
-              color: "white", // Colore del testo bianco
-              fontSize: "1.2rem", // Dimensione del testo
-              cursor: "pointer", // Mostra il cursore a mano
+              background: "transparent", // Pulsante trasparente
+              border: "none",
+              color: "white", // Colore del testo
+              fontSize: "1.2rem",
+              cursor: "pointer", // Cambia il cursore quando il pulsante è selezionato
             }}
           >
-            × {/* Icona per chiudere la chat */}
+            × {/* Icona per chiudere */}
           </button>
         </div>
 
-        {/* Sezione dei messaggi */}
+        {/* Area dei messaggi */}
         <div
           className="messages flex-grow-1 p-3"
           style={{
-            overflowY: "auto", // Abilita lo scroll verticale
-            background: "#f8f9fa", // Colore di sfondo chiaro per i messaggi
-            display: "flex", // Layout flessibile per i messaggi
-            flexDirection: "column", // Disposizione verticale dei messaggi
+            overflowY: "auto", // Scorrimento verticale
+            background: "#f8f9fa", // Colore di sfondo
+            display: "flex",
+            flexDirection: "column", // Messaggi disposti verticalmente
           }}
         >
           {messages &&
             messages.map((message, index) => (
               <div
-                key={index} // Ogni messaggio deve avere una chiave unica
-                ref={scroll} // Referenza per scorrere verso il basso
+                key={index}
+                ref={scroll} // Imposta il riferimento per lo scroll
                 className={`message ${
                   message?.senderId === user?._id
-                    ? "align-self-end bg-primary text-white" // Messaggi inviati dall'utente
-                    : "align-self-start bg-light text-dark" // Messaggi ricevuti
+                    ? "align-self-end bg-primary text-white" // Messaggi dell'utente corrente
+                    : "align-self-start bg-light text-dark" // Messaggi del destinatario
                 } p-2 mb-2 shadow-sm`}
                 style={{
-                  maxWidth: "75%", // Imposta la larghezza massima del messaggio
-                  borderRadius: "10px", // Angoli arrotondati per il messaggio
-                  wordWrap: "break-word", // Gestisce il ritorno a capo del testo
-                  fontSize: "0.9rem", // Imposta la dimensione del testo
+                  maxWidth: "75%", // Larghezza massima per i messaggi
+                  borderRadius: "10px",
+                  wordWrap: "break-word", // Consente il ritorno a capo
+                  fontSize: "0.9rem",
                 }}
               >
                 <span>{message.text}</span> {/* Testo del messaggio */}
                 <div
                   className="message-footer"
                   style={{
-                    marginTop: "5px", // Distanza tra il testo del messaggio e la data
-                    textAlign: "right", // Allinea la data a destra
-                    fontSize: "0.8rem", // Dimensione del testo della data
+                    marginTop: "5px",
+                    textAlign: "right", // Allinea il timestamp a destra
+                    fontSize: "0.8rem",
                     color:
                       message?.senderId === user?._id
-                        ? "rgba(255, 255, 255, 0.7)" // Colore della data per i messaggi inviati
-                        : "rgba(0, 0, 0, 0.6)", // Colore della data per i messaggi ricevuti
+                        ? "rgba(255, 255, 255, 0.7)"
+                        : "rgba(0, 0, 0, 0.6)", // Colore del timestamp
                   }}
                 >
                   {moment(message.createdAt).format("HH:mm")} {/* Orario del messaggio */}
@@ -152,49 +154,65 @@ const ChatBox = ({ closeChatBox }) => {
             ))}
         </div>
 
-        {/* Sezione di input per inviare i messaggi */}
+        {/* Area di input */}
         <div
           className="chat-input d-flex align-items-center p-2"
           style={{
-            backgroundColor: "white", // Colore di sfondo per il campo di input
-            borderTop: "1px solid rgba(0, 0, 0, 0.1)", // Bordi sottili sopra l'input
-            borderBottomLeftRadius: "15px", // Angolo arrotondato in basso a sinistra
-            borderBottomRightRadius: "15px", // Angolo arrotondato in basso a destra
-            display: "flex", // Layout flessibile
-            flexDirection: "column", // Disposizione verticale
-            gap: "10px", // Distanza tra input e pulsante
+            backgroundColor: "white", // Sfondo bianco
+            borderTop: "1px solid rgba(0, 0, 0, 0.1)", // Bordo superiore
+            borderBottomLeftRadius: "15px", // Arrotonda gli angoli inferiori
+            borderBottomRightRadius: "15px",
           }}
         >
           <div
             style={{
-              display: "flex", // Layout flessibile
-              alignItems: "center", // Allinea gli elementi al centro verticalmente
-              gap: "10px", // Distanza tra emoji e campo di input
-              width: "100%", // L'input occupa tutta la larghezza disponibile
+              display: "flex",
+              alignItems: "center", // Allinea verticalmente
+              gap: "10px", // Spaziatura tra input e pulsante
+              width: "100%",
             }}
           >
-            <InputEmoji
-              value={textMessage} // Valore del messaggio in uscita
-              onChange={setTextMessage} // Aggiorna il valore del messaggio
-              fontFamily="nunito" // Font utilizzato per l'input
-              borderColor="rgba(0, 0, 0, 0.2)" // Colore del bordo
-              placeholder="Type a message..." // Placeholder del campo di input
-              onKeyDown={handleKeyDown} // Gestione dell'evento "keydown" (inviare il messaggio)
-              maxLength={500} // Limite massimo per il numero di caratteri nel messaggio
-            />
+            {/* Input per il messaggio */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <InputEmoji
+                value={textMessage}
+                onChange={setTextMessage} // Aggiorna lo stato
+                fontFamily="nunito"
+                borderColor="rgba(0, 0, 0, 0.2)"
+                placeholder="Type a message..." // Placeholder
+                onKeyDown={handleKeyDown} // Gestisce Enter
+                maxLength={500} // Lunghezza massima
+                style={{
+                  width: "100%",
+                }}
+              />
+            </div>
+            {/* Pulsante per inviare */}
             <button
               onClick={handleSendMessage} // Invia il messaggio
               style={{
-                backgroundColor: "#007bff", // Colore di sfondo blu
-                color: "white", // Colore del testo bianco
+                backgroundColor: "#007bff", // Colore blu
+                color: "white", // Testo bianco
                 border: "none", // Nessun bordo
-                borderRadius: "50%", // Bordo arrotondato
-                padding: "10px", // Padding interno per il pulsante
-                cursor: "pointer", // Mostra il cursore a mano
-                fontSize: "1.5rem", // Dimensione del testo
+                borderRadius: "50%", // Forma circolare
+                width: "40px",
+                height: "40px",
+                display: "flex",
+                alignItems: "center", // Allinea il contenuto
+                justifyContent: "center",
+                cursor: "pointer",
+                flexShrink: 0, // Non si restringe
               }}
             >
-              &#8594; {/* Icona per inviare il messaggio */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="white" // Colore bianco per l'icona
+                width="20px"
+                height="20px"
+              >
+                <path d="M2 21l21-9-21-9v7l15 2-15 2v7z" /> {/* Icona invio */}
+              </svg>
             </button>
           </div>
         </div>
