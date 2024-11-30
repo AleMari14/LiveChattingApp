@@ -52,3 +52,4 @@ const userSchema = new mongoose.Schema(
 const userModel = mongoose.model("User", userSchema); 
 // Crea un modello Mongoose chiamato "User" basato sullo schema `userSchema`.
 //
+module.exports = userModel;
