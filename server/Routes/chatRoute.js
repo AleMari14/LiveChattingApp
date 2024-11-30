@@ -1,31 +1,24 @@
 const express = require("express"); 
-// Importa il modulo Express per creare il router.
+// Per creare e gestire le rotte con Express
 
 const {
   createChat,
   userChats,
   findChat,
 } = require("../Controllers/chatController"); 
-// Importa le funzioni del controller della chat dal file `chatController`.
-// Queste funzioni implementano la logica per gestire le richieste relative alle chat.
+// Importa le funzioni dal controller per la gestione delle chat
 
 const router = express.Router(); 
-// Crea un'istanza di router di Express per definire le rotte specifiche della chat.
+// Istanza del router di Express per le rotte delle chat
 
 router.post("/", createChat); 
-// Rotta POST per creare una nuova chat.
-// Path: `/`
-// La funzione `createChat` gestisce la logica per creare una chat tra due utenti.
+// Crea una nuova chat: metodo POST, path `/`
 
 router.get("/:userId", userChats); 
-// Rotta GET per ottenere tutte le chat di un determinato utente.
-// Path: `/:userId`
-// La funzione `userChats` recupera tutte le chat in cui l'utente con l'ID specificato è un membro.
+// Recupera tutte le chat di un utente specifico: metodo GET, path `/:userId`
 
 router.get("/find/:firstId/:secondId", findChat); 
-// Rotta GET per trovare una chat specifica tra due utenti.
-// Path: `/find/:firstId/:secondId`
-// La funzione `findChat` cerca una chat in base agli ID dei due utenti forniti nei parametri.
+// Cerca una chat tra due utenti specifici: metodo GET, path `/find/:firstId/:secondId`
 
 module.exports = router; 
-// Esporta il router in modo che possa essere utilizzato nell'app principale (ad esempio, in `app.js`).
+// Esporta il router per l'utilizzo nell'applicazione

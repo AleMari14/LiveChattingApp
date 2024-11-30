@@ -1,72 +1,58 @@
 const chatModel = require("../Models/chatModel"); 
-// Importa il modello `chatModel` per interagire con il database (MongoDB) per la gestione delle chat.
+// Modello per interagire con il database delle chat (MongoDB)
 
 const createChat = async (req, res) => {
-  const { senderId, receiverId } = req.body; 
-  // Estrae `senderId` e `receiverId` dal corpo della richiesta HTTP.
+  const { senderId, receiverId } = req.body;
 
   try {
-    // Verifica se una chat tra i due utenti già esiste.
+    // Controlla se esiste già una chat tra i due utenti
     const chat = await chatModel.findOne({
-      members: { $all: [senderId, receiverId] }, 
-      // `$all` verifica che entrambi gli ID siano presenti nell'array `members`.
+      members: { $all: [senderId, receiverId] },
     });
 
-    if (chat) return res.status(200).json(chat); 
-    // Se la chat esiste già, restituisce la chat trovata con codice 200.
+    if (chat) return res.status(200).json(chat); // Restituisce la chat esistente
 
-    // Se non esiste, crea una nuova chat con i due utenti come membri.
+    // Crea una nuova chat se non esiste
     const newChat = new chatModel({
-      members: [senderId, receiverId], 
+      members: [senderId, receiverId],
     });
 
-    const response = await newChat.save(); 
-    // Salva la nuova chat nel database e memorizza il risultato.
-
-    res.status(200).json(response); 
-    // Restituisce la nuova chat creata con codice 200.
+    const response = await newChat.save();
+    res.status(200).json(response); // Restituisce la chat creata
   } catch (error) {
-    res.status(500).json(error); 
-    // Gestisce eventuali errori restituendo un codice 500 e il dettaglio dell'errore.
+    res.status(500).json(error); // Restituisce un errore in caso di problemi
   }
 };
 
 const userChats = async (req, res) => {
-  const userId = req.params.userId; 
-  // Estrae l'ID utente dai parametri della richiesta.
+  const userId = req.params.userId;
 
   try {
+    // Trova tutte le chat che includono l'utente
     const chats = await chatModel.find({
-      members: { $in: [userId] }, 
-      // `$in` verifica se l'ID utente è incluso nell'array `members`.
+      members: { $in: [userId] },
     });
 
-    res.status(200).json(chats); 
-    // Restituisce tutte le chat che includono l'utente con codice 200.
+    res.status(200).json(chats); // Restituisce le chat trovate
   } catch (error) {
-    res.status(500).json(error); 
-    // Gestisce eventuali errori restituendo un codice 500 e il dettaglio dell'errore.
+    res.status(500).json(error); // Gestisce errori
   }
 };
 
 const findChat = async (req, res) => {
-  const firstId = req.params.firstId;
-  const secondId = req.params.secondId; 
-  // Estrae i due ID dai parametri della richiesta.
+  const { firstId, secondId } = req.params;
 
   try {
+    // Cerca una chat specifica tra due utenti
     const chat = await chatModel.findOne({
-      members: { $all: [firstId, secondId] }, 
-      // Cerca una chat che contenga entrambi gli ID nei membri.
+      members: { $all: [firstId, secondId] },
     });
 
-    res.status(200).json(chat); 
-    // Restituisce la chat trovata con codice 200.
+    res.status(200).json(chat); // Restituisce la chat trovata
   } catch (error) {
-    res.status(500).json(error); 
-    // Gestisce eventuali errori restituendo un codice 500 e il dettaglio dell'errore.
+    res.status(500).json(error); // Gestisce errori
   }
 };
 
 module.exports = { createChat, userChats, findChat }; 
-// Esporta le funzioni per poterle utilizzare in altre parti dell'applicazione.
+// Esporta le funzioni per l'utilizzo in altre parti del progetto

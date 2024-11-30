@@ -29,7 +29,7 @@ export const ChatContextProvider = ({ children, user }) => {
   console.log("sendTextMessageError", sendTextMessageError);
   console.log("notifications", notifications);
 
-  // initialize socket
+  // Inizializza la connessione al socket
   useEffect(() => {
     const newSocket = io(import.meta.env.VITE_SOCKET_URL);
     setSocket(newSocket);
@@ -39,7 +39,7 @@ export const ChatContextProvider = ({ children, user }) => {
     };
   }, [user]);
 
-  // set online users
+  // Imposta gli utenti online
   useEffect(() => {
     if (socket === null) return;
 
@@ -53,7 +53,7 @@ export const ChatContextProvider = ({ children, user }) => {
     };
   }, [socket]);
 
-  // send message
+  // Invia il messaggio
   useEffect(() => {
     if (socket === null) return;
 
@@ -62,7 +62,7 @@ export const ChatContextProvider = ({ children, user }) => {
     socket.emit("sendMessage", { ...newMessage, recipientId });
   }, [newMessage]);
 
-  // receive message and notifications
+  // Riceve messaggi e notifiche
   useEffect(() => {
     if (socket === null) return;
 
@@ -88,6 +88,7 @@ export const ChatContextProvider = ({ children, user }) => {
     };
   }, [socket, currentChat]);
 
+  // Recupera i messaggi
   useEffect(() => {
     const getMessages = async () => {
       setIsMessagesLoading(true);
@@ -107,12 +108,13 @@ export const ChatContextProvider = ({ children, user }) => {
     getMessages();
   }, [currentChat]);
 
+  // Recupera gli utenti
   useEffect(() => {
     const getUsers = async () => {
       const response = await getRequest(`${baseUrl}/users`);
 
       if (response.error) {
-        return console.log("Error fetching users:", response);
+        return console.log("Errore nel recupero degli utenti:", response);
       }
 
       if (userChats) {
@@ -137,6 +139,7 @@ export const ChatContextProvider = ({ children, user }) => {
     getUsers();
   }, [userChats]);
 
+  // Recupera le chat dell'utente
   useEffect(() => {
     const getUserChats = async () => {
       setIsUserChatsLoading(true);
@@ -164,9 +167,10 @@ export const ChatContextProvider = ({ children, user }) => {
     setCurrentChat(chat);
   }, []);
 
+  // Funzione per inviare un messaggio di testo
   const sendTextMessage = useCallback(
     async (textMessage, sender, currentChatId, setTextMessage) => {
-      if (!textMessage) return console.log("You must type something...");
+      if (!textMessage) return console.log("Devi scrivere qualcosa...");
 
       const response = await postRequest(
         `${baseUrl}/messages`,
@@ -188,6 +192,7 @@ export const ChatContextProvider = ({ children, user }) => {
     []
   );
 
+  // Funzione per creare una nuova chat
   const createChat = useCallback(async (senderId, receiverId) => {
     const response = await postRequest(
       `${baseUrl}/chats`,
@@ -195,12 +200,13 @@ export const ChatContextProvider = ({ children, user }) => {
     );
 
     if (response.error) {
-      return console.log("Error creating chat:", response);
+      return console.log("Errore nella creazione della chat:", response);
     }
 
     setUserChats((prev) => [...prev, response]);
   }, []);
 
+  // Funzione per segnare tutte le notifiche come lette
   const markAllNotificationsAsRead = useCallback((notifications) => {
     const modifiedNotifications = notifications.map((n) => {
       return { ...n, isRead: true };
@@ -209,9 +215,9 @@ export const ChatContextProvider = ({ children, user }) => {
     setNotifications(modifiedNotifications);
   }, []);
 
+  // Funzione per segnare una notifica come letta
   const markNotificationAsRead = useCallback(
     (n, userChats, user, notifications) => {
-      // find chat to open
       const readChat = userChats.find((chat) => {
         const chatMembers = [user._id, n.senderId];
         const isDesiredChat = chat?.members.every((member) => {
@@ -221,7 +227,6 @@ export const ChatContextProvider = ({ children, user }) => {
         return isDesiredChat;
       });
 
-      // mark notification as read
       const modifiedNotifications = notifications.map((element) => {
         if (n.senderId === element.senderId) {
           return { ...n, isRead: true };
@@ -236,10 +241,9 @@ export const ChatContextProvider = ({ children, user }) => {
     []
   );
 
+  // Funzione per segnare come lette le notifiche di un utente specifico
   const markThisUserNotificationsAsRead = useCallback(
     (thisUserNotifications, notifications) => {
-      // mark notification as read
-
       const modifiedNotifications = notifications.map((element) => {
         let notification;
 
