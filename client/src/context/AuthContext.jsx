@@ -5,7 +5,7 @@ import { baseUrl, postRequest } from "../utils/service";
 // Crea il contesto per l'autenticazione
 export const AuthContext = createContext();
 
-// Componente provider per l'autenticazione
+// Componente provider per l'autenticazione, children = ogni cosa che viene passata come contenuto nella funzione
 export const AuthContextProvider = ({ children }) => {
   // Stato per l'utente loggato
   const [user, setUser] = useState(null);
@@ -27,14 +27,8 @@ export const AuthContextProvider = ({ children }) => {
     password: "",
   });
 
-  // Log per il debug
-  console.log("Userr:", user);
-  console.log("registerError:", registerError);
-  console.log("isRegisterLoading:", isRegisterLoading);
-  console.log("loginError:", loginError);
-  console.log("isLoginLoading:", isLoginLoading);
-
   // Effetto per recuperare l'utente dal localStorage al caricamento del componente
+  //passando un array vuoto la funzione viene eseguita una volta sola
   useEffect(() => {
     const user = localStorage.getItem("User");
     setUser(JSON.parse(user)); // Imposta l'utente se esiste nel localStorage
@@ -53,6 +47,7 @@ export const AuthContextProvider = ({ children }) => {
   // Funzione per registrare un nuovo utente
   const registerUser = useCallback(
     async (e) => {
+      //evita il ricaricamento della pagina
       e.preventDefault();
 
       // Imposta lo stato di caricamento

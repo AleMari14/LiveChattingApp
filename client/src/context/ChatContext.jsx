@@ -31,7 +31,7 @@ export const ChatContextProvider = ({ children, user }) => {
     };
   }, [user]);
 
-  // Imposta gli utenti online
+  // Imposta gli utenti online, eseguito useEffect ogni volta che socket viene cambiato
   useEffect(() => {
     if (socket === null) return;
 

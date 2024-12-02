@@ -1,3 +1,5 @@
+//funzioni sono utilizzate per interagire con un'API, facilitando il recupero e l'invio di informazioni tra il client e il server.
+
 // Base URL per le richieste API
 export const baseUrl = "https://livechattingapp.onrender.com/api";
 

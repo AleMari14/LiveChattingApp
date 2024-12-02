@@ -4,7 +4,7 @@ import { ChatContext } from "../context/ChatContext";  // Importa il contesto Ch
 import { baseUrl, getRequest } from "../utils/service"; // Importa la funzione di richiesta HTTP (getRequest) e l'URL base per le API
 
 // Custom hook per ottenere l'ultimo messaggio di una chat specifica.
-export const useFecthLatestMessage = (chat) => {
+export const useFetchLatestMessage = (chat) => {
   // Estrae i valori dal contesto ChatContext, inclusi i nuovi messaggi e le notifiche.
   const { newMessage, notifications } = useContext(ChatContext);
   

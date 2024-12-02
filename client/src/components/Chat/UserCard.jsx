@@ -2,7 +2,7 @@ import { useContext } from "react"; // Importa il hook useContext per accedere a
 import { Stack, Badge } from "react-bootstrap"; // Importa Stack e Badge da React-Bootstrap per il layout e le etichette
 import avatar from "../../assets/avatar.svg"; // Importa un'icona di avatar di default
 import { ChatContext } from "../../context/ChatContext"; // Importa il contesto ChatContext per accedere alle informazioni sulla chat
-import { useFecthLatestMessage } from "../../hooks/useFetchLatestMessage"; // Hook per recuperare l'ultimo messaggio della chat
+import { useFetchLatestMessage } from "../../hooks/useFetchLatestMessage"; // Hook per recuperare l'ultimo messaggio della chat
 import { useFetchRecipientUser } from "../../hooks/useFetchRecipient"; // Hook per recuperare il destinatario della chat
 import { unreadNotificationsFunc } from "../../utils/unreadNotifications"; // Funzione per ottenere le notifiche non lette
 import moment from "moment"; // Importa moment per la gestione delle date
@@ -10,7 +10,7 @@ import moment from "moment"; // Importa moment per la gestione delle date
 const UserCard = ({ chat, user }) => {
   // Usa il hook per ottenere informazioni sul destinatario della chat e l'ultimo messaggio
   const { recipientUser } = useFetchRecipientUser(chat, user);
-  const { latestMessage } = useFecthLatestMessage(chat);
+  const { latestMessage } = useFetchLatestMessage(chat);
 
   // Accede al contesto per ottenere gli utenti online, le notifiche e le funzioni per gestirle
   const { onlineUsers, notifications, markThisUserNotificationsAsRead } = useContext(ChatContext);
